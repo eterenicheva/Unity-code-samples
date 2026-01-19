@@ -7,18 +7,17 @@ using UObject = UnityEngine.Object;
 
 public static class GameSaveManager
 {
-    // Основные пути
+    
     private static readonly string MainPath = Path.Combine(Application.persistentDataPath, "savegame.json");
     private static readonly string BakPath = Path.Combine(Application.persistentDataPath, "savegame.bak");
     private static readonly string TmpPath = Path.Combine(Application.persistentDataPath, "savegame.tmp");
 
-    // Проверка наличия локального сейва
+    
     public static bool HasLocalSave()
     {
         return File.Exists(MainPath) || File.Exists(BakPath);
     }
 
-    /// Сохранить текущее состояние (атомарно + бэкап)
     public static void Save()
     {
         var holder = UserDataHolder.Instance;
@@ -28,7 +27,6 @@ public static class GameSaveManager
             return;
         }
 
-        // Собираем снимок поля
         var bubbles = CollectBubbles();
         var data = new SaveData
         {
@@ -53,7 +51,6 @@ public static class GameSaveManager
 
         try
         {
-            // атомарная запись с бэкапом (как уже делали)
             using (var fs = new FileStream(TmpPath, FileMode.Create, FileAccess.Write, FileShare.None))
             using (var sw = new StreamWriter(fs))
             {
@@ -79,7 +76,6 @@ public static class GameSaveManager
 
     }
 
-    // Вспомогательное: прочитать текущее сохранение (main или bak)
     private static bool TryLoadExisting(out SaveData data)
     {
         data = null;
@@ -89,14 +85,11 @@ public static class GameSaveManager
     }
 
 
-    /// Загрузить с диска; вернуть null, если файла нет/битый
     public static SaveData Load()
     {
-        // 1) Пытаемся из основного
         if (TryReadJson(MainPath, out var dataFromMain))
             return dataFromMain;
 
-        // 2) Фолбэк на бэкап
         if (TryReadJson(BakPath, out var dataFromBak))
         {
             Debug.LogWarning("[Save] Main is missing/corrupted. Restored from backup.");
@@ -106,7 +99,6 @@ public static class GameSaveManager
         return null;
     }
 
-    /// Удалить сейв (по явному запросу)
     public static void DeleteSave()
     {
         try { if (File.Exists(MainPath)) File.Delete(MainPath); } catch { }
@@ -120,7 +112,6 @@ public static class GameSaveManager
         }
     }
 
-    // === Вспомогательные ===
 
     private static bool TryReadJson(string path, out SaveData data)
     {
@@ -150,7 +141,6 @@ public static class GameSaveManager
             var rb = go.GetComponent<Rigidbody2D>();
             var touch = go.GetComponent<BubbleTouchController>();
 
-            // ВЕРХНИЙ НЕ СОХРАНЯЕМ
             if (touch != null && touch.enabled)
                 continue;
 
@@ -163,10 +153,11 @@ public static class GameSaveManager
                 mergeLevel = mergeLevel,
                 position = go.transform.position,
                 linearVelocity = rb ? rb.linearVelocity : Vector2.zero,
-                isControlledTop = false // однозначно false
+                isControlledTop = false 
             });
         }
         return result;
     }
 
 }
+
