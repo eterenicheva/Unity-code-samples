@@ -7,11 +7,11 @@ public class SaveScheduler : MonoBehaviour
     public static SaveScheduler Instance { get; private set; }
 
     [Header("Autosave")]
-    [Tooltip("Период автосейва в секундах (реального времени)")]
+    [Tooltip("ГЏГҐГ°ГЁГ®Г¤ Г ГўГІГ®Г±ГҐГ©ГўГ  Гў Г±ГҐГЄГіГ­Г¤Г Гµ (Г°ГҐГ Г«ГјГ­Г®ГЈГ® ГўГ°ГҐГ¬ГҐГ­ГЁ)")]
     [SerializeField] private float autosaveIntervalSeconds = 1.5f;
-    [Tooltip("Сохранять только в игровой сцене")]
+    [Tooltip("Г‘Г®ГµГ°Г Г­ГїГІГј ГІГ®Г«ГјГЄГ® Гў ГЁГЈГ°Г®ГўГ®Г© Г±Г¶ГҐГ­ГҐ")]
     [SerializeField] private bool autosaveOnlyInGameScene = true;
-    [Tooltip("Имя игровой сцены")]
+    [Tooltip("Г€Г¬Гї ГЁГЈГ°Г®ГўГ®Г© Г±Г¶ГҐГ­Г»")]
     [SerializeField] private string gameSceneName = "GameScene";
 
     [Header("Lifecycle save (optional)")]
@@ -42,12 +42,9 @@ public class SaveScheduler : MonoBehaviour
         }
     }
 
-    // === Публичное API (на совместимость со старым кодом) ===
-    // Теперь эти методы просто сохраняют сразу, без дебаунса.
     public void RequestSave() => DoSaveNow(ignoreSceneGate: true);
     public void FlushNow() => DoSaveNow(ignoreSceneGate: true);
 
-    // === Автосейв луп ===
     private IEnumerator AutosaveLoop()
     {
         float period = Mathf.Max(0.2f, autosaveIntervalSeconds);
@@ -65,7 +62,6 @@ public class SaveScheduler : MonoBehaviour
         }
     }
 
-    // === Фактический сейв ===
     private void DoSaveNow(bool ignoreSceneGate)
     {
         if (isSaving)
@@ -106,7 +102,6 @@ public class SaveScheduler : MonoBehaviour
 
 
 
-    // === Страховки при сворачивании/выходе ===
     private void OnApplicationPause(bool pause)
     {
         if (!handleLifecycleSaves) return;
@@ -130,3 +125,4 @@ public class SaveScheduler : MonoBehaviour
     }
 
 }
+
